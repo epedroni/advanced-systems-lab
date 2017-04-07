@@ -1,0 +1,23 @@
+clients/memaslap -s 127.0.0.1:11212 -T 64 -c 64 -o1 -S 1s -t 15s -F ~/shared/uni/eth/asl/workloads/smallvalue.cfg
+
+
+"default": clients/memaslap -s ip_of_server_vm:11212 -T 64 -c 64 -o 1 -S 1s -t <runtime> -F <path/to/configfile>
+
+
+-T: number of threads
+-c: number of concurrency?
+-o: the proportion of objects need overwrite?
+-S: frequency of dumping statistic information, suffix: s-seconds, m-minutes, etc
+-t: how long to run for, suffix: s-seconds, m-minutes, etc
+-F: provide a workload file
+-x: Number of operations(get and set) to execute for the given test. Default 1000000.
+
+
+clients/memaslap -s 127.0.0.1:11212 -T 4 -c 4 -o 1 -S 1m -t 5m -F ~/uni/eth/asl/workloads/smallvalue.cfg
+
+memcached -p 11212 -t 1 -vv
+
+
+
+
+-l localhost -p 11212 -t 3 -r 3 -m 127.0.0.1:11212

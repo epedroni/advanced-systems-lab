@@ -1,0 +1,6 @@
+#!/bin/bash
+echo "Cleaning up..."
+tmux send-keys -t memcached "exit" Enter
+tmux send-keys -t middleware "exit" Enter
+tmux kill-session -t memcached
+tmux kill-session -t middleware

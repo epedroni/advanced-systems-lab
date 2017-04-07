@@ -1,0 +1,146 @@
+#!/bin/bash
+# This is a complete batch experiment, configurable to run on an arbitrary
+# number of servers for an arbitrary number of runs, varying a single factor.
+# Use the fields below to configure.
+#
+# This script downloads logs from the servers in use to a separate directory
+# for each run, labeled according to the run's parameter value.
+
+# the experiment ID
+expID="sec2-c$1"
+
+# run parameters
+duration="200s"
+runs=5
+
+# number of machines to use for this experiment - don't forget to start them!
+clients=2
+servers=5
+
+memaslap_threads="$(($1/${clients}))"
+memaslap_conc="$(($1/${clients}))"
+memaslap_workload="workloads/smallvalue_readonly.cfg"
+memaslap_logfreq="10s"
+memaslap_server="10.0.0.11:11212"
+memaslap_window="1k"
+memaslap_overwrite="1"
+
+mw_threads="3"
+mw_replication="1"
+#10.0.0.4:11212 10.0.0.6:11212 10.0.0.8:11212 10.0.0.9:11212 10.0.0.13:11212
+mw_servers="10.0.0.4:11212 10.0.0.6:11212 10.0.0.8:11212 10.0.0.9:11212 10.0.0.13:11212"
+
+memcached_threads="1"
+
+# the parameter we are varying
+variable=(10 20 30 40)
+
+# ssh addresses are hardcoded here
+serveradd=("epedroniforaslvms1.westeurope.cloudapp.azure.com"
+           "epedroniforaslvms2.westeurope.cloudapp.azure.com"
+           "epedroniforaslvms3.westeurope.cloudapp.azure.com"
+           "epedroniforaslvms7.westeurope.cloudapp.azure.com"
+           "epedroniforaslvms8.westeurope.cloudapp.azure.com")
+
+clientadd=("epedroniforaslvms4.westeurope.cloudapp.azure.com"
+           "epedroniforaslvms5.westeurope.cloudapp.azure.com"
+           "epedroniforaslvms6.westeurope.cloudapp.azure.com"
+           "epedroniforaslvms9.westeurope.cloudapp.azure.com"
+           "epedroniforaslvms10.westeurope.cloudapp.azure.com")
+
+middlewareadd="epedroniforaslvms11.westeurope.cloudapp.azure.com"
+
+# creates the necessary tmuxes, already ssh'd and synchronised
+function setup {
+    # create memcached session
+    tmux new-session -s memcached -d
+    tmux send-keys -t memcached "ssh epedroni@${serveradd[0]}" Enter
+    for ((s=1;s<=servers-1;s++)); do
+        tmux split-window -v -t memcached
+        tmux select-layout -t memcached even-vertical
+	sleep 1
+        tmux send-keys -t memcached "ssh epedroni@${serveradd[s]}" Enter
+	echo "ssh into ${serveradd[s]}"
+    done
+    tmux set-option -t memcached synchronize-panes on
+
+    # create middleware session
+    tmux new-session -s middleware -d
+    sleep 1
+    tmux send-keys -t middleware "ssh epedroni@${middlewareadd}" Enter
+
+    # create memaslap ssh string
+    for ((c=0;c<=clients-1;c++)); do
+        sshClients="-H ${clientadd[c]} ${sshClients}"
+    done
+
+    # done
+    echo "Running tmuxes:"
+    tmux ls
+    echo "SSH clients: ${sshClients}"
+    echo "-----------------------------------------------------------------------------------"
+}
+
+# removes the created tmux sessions
+function cleanup {
+    echo "Cleaning up..."
+    tmux send-keys -t memcached C-c
+    tmux send-keys -t middleware C-c
+    tmux send-keys -t memcached "exit" Enter
+    tmux send-keys -t middleware "exit" Enter
+    tmux kill-session -t memcached
+    tmux kill-session -t middleware
+}
+
+function pullLogs {
+    # make new experiment directory
+    mkdir -p $1
+
+    # pull data from servers
+    scp epedroni@${middlewareadd}:~/middleware.log $1/middleware.log
+
+    for ((c=0;c<clients;c++)); do
+        scp epedroni@${clientadd[c]}:~/memaslap.log $1/mema${c}.log
+    done
+}
+
+# Run the experiment
+setup
+
+for ((p=0;p<${#variable[@]};p++)); do
+    for ((r=0;r<${runs};r++)); do
+        echo "Threads: ${variable[p]}, run ${r} on $(date)"
+
+        # start run
+        # memcached -p 11212 -t 1
+        tmux send-keys -t memcached "memcached -p 11212 -t ${memcached_threads}" Enter
+        sleep 1
+
+        # java -jar middleware-epedroni.jar -l 10.0.0.11 -p 11212 -t 3 -r 3 -m 10.0.0.8:11212 10.0.0.6:11212
+        tmux send-keys -t middleware "java -jar middleware-epedroni.jar -l 10.0.0.11 -p 11212 -t ${variable[p]} -r ${mw_replication} -m ${mw_servers}" Enter
+        sleep 5
+
+        # memaslap -s 10.0.0.11:11212 -T 64 -c 64 -o 1 -S 1m -t  -F workloads/smallvalue.cfg
+        memastring="./libmemcached-1.0.18/clients/memaslap -s ${memaslap_server} -T ${memaslap_threads} -c ${memaslap_conc} -w ${memaslap_window} -o ${memaslap_overwrite} -S ${memaslap_logfreq} -t ${duration} -F ${memaslap_workload} > memaslap.log"
+        echo "Running: ${memastring}"
+        parallel-ssh -t 0 -l epedroni ${sshClients} "${memastring}"
+        ret=$?
+
+        # if something went wrong, abort without cleaning up
+        if ((ret != 0)); then
+            exit ret
+        fi
+
+        echo "Done, pulling logs..."
+        pullLogs "${expID}-v${variable[p]}-r${r}"
+
+        echo "Killing memcached and middleware"
+        tmux send-keys -t memcached C-c
+        tmux send-keys -t middleware C-c
+
+        echo "-----------------------------------------------------------------------------------"
+    done
+done
+
+cleanup
+exit 0

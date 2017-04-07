@@ -1,0 +1,1234 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "virtualMachines_name": {
+      "defaultValue": "foraslvms",
+      "type": "string"
+    },
+    "virtualMachines_adminPassword": {
+      "defaultValue": null,
+      "type": "securestring"
+    },
+    "networkInterfaces_name": {
+      "defaultValue": "MyNetworkInterface",
+      "type": "string"
+    },
+    "virtualNetworks_testeth_vnet_name": {
+      "defaultValue": "MyVNet",
+      "type": "string"
+    },
+    "key": {
+      "defaultValue": "your_public_SSH_key",
+      "type": "string"
+    },
+    "uniquedns": {
+      "defaultValue": "your_nethz",
+      "type": "string"
+    }
+  },
+  "variables": {
+    "unique": "uniquestring(resourceGroup().id)",
+    "storageAccountName": "[concat(uniquestring(resourceGroup().id), 'ethasl')]",
+    "ip1": "[concat(parameters('virtualMachines_name'),1)]",
+    "ip2": "[concat(parameters('virtualMachines_name'),2)]",
+    "ip3": "[concat(parameters('virtualMachines_name'),3)]",
+    "ip4": "[concat(parameters('virtualMachines_name'),4)]",
+    "ip5": "[concat(parameters('virtualMachines_name'),5)]",
+    "ip6": "[concat(parameters('virtualMachines_name'),6)]",
+    "ip7": "[concat(parameters('virtualMachines_name'),7)]",
+    "ip8": "[concat(parameters('virtualMachines_name'),8)]",
+    "ip9": "[concat(parameters('virtualMachines_name'),9)]",
+    "ip10": "[concat(parameters('virtualMachines_name'),10)]",
+    "ip11": "[concat(parameters('virtualMachines_name'),11)]",
+    "netin1": "[concat(parameters('networkInterfaces_name'),1)]",
+    "netin2": "[concat(parameters('networkInterfaces_name'),2)]",
+    "netin3": "[concat(parameters('networkInterfaces_name'),3)]",
+    "netin4": "[concat(parameters('networkInterfaces_name'),4)]",
+    "netin5": "[concat(parameters('networkInterfaces_name'),5)]",
+    "netin6": "[concat(parameters('networkInterfaces_name'),6)]",
+    "netin7": "[concat(parameters('networkInterfaces_name'),7)]",
+    "netin8": "[concat(parameters('networkInterfaces_name'),8)]",
+    "netin9": "[concat(parameters('networkInterfaces_name'),9)]",
+    "netin10": "[concat(parameters('networkInterfaces_name'),10)]",
+    "netin11": "[concat(parameters('networkInterfaces_name'),11)]",
+    "storageAccountType": "Standard_LRS"
+
+  },
+
+  "resources": [
+
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[variables('storageAccountName')]",
+      "apiVersion": "2016-01-01",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "[variables('storageAccountType')]"
+      },
+      "kind": "Storage",
+      "properties": {}
+
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat(parameters('virtualMachines_name'),'1')]",
+      "apiVersion": "2015-06-15",
+      "location": "westeurope",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Basic_A2"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "Canonical",
+            "offer": "UbuntuServer",
+            "sku": "14.04.0-LTS",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "[parameters('virtualMachines_name')]",
+            "createOption": "FromImage",
+            "vhd": {
+              "uri": "[concat('https', '://', variables('storageAccountName'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_name'),1,'.vhd'))]"
+            },
+            "caching": "ReadWrite"
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "[concat(parameters('virtualMachines_name'),'1')]",
+          "adminUsername": "[parameters('uniquedns')]",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "[concat('/home/', parameters('uniquedns'), '/.ssh/authorized_keys')]",
+                  "keyData": "[parameters('key')]"
+                }
+              ]
+            }
+          },
+          "secrets": [],
+          "adminPassword": "[parameters('virtualMachines_adminPassword')]"
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('netin1'))]"
+            }
+          ]
+        }
+      },
+      "resources": [],
+      "dependsOn": [
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('netin1'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat(parameters('virtualMachines_name'),'2')]",
+      "apiVersion": "2015-06-15",
+      "location": "westeurope",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Basic_A2"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "Canonical",
+            "offer": "UbuntuServer",
+            "sku": "14.04.0-LTS",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "[concat(parameters('virtualMachines_name'),'2')]",
+            "createOption": "FromImage",
+            "vhd": {
+              "uri": "[concat('https', '://', variables('storageAccountName'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_name'),2,'.vhd'))]"
+            },
+            "caching": "ReadWrite"
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "[concat(parameters('virtualMachines_name'),'2')]",
+          "adminUsername": "[parameters('uniquedns')]",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "[concat('/home/', parameters('uniquedns'), '/.ssh/authorized_keys')]",
+                  "keyData": "[parameters('key')]"
+                }
+              ]
+            }
+          },
+          "secrets": [],
+          "adminPassword": "[parameters('virtualMachines_adminPassword')]"
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('netin2'))]"
+            }
+          ]
+        }
+      },
+      "resources": [],
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('netin2'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat(parameters('virtualMachines_name'),'3')]",
+      "apiVersion": "2015-06-15",
+      "location": "westeurope",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Basic_A2"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "Canonical",
+            "offer": "UbuntuServer",
+            "sku": "14.04.0-LTS",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "[concat(parameters('virtualMachines_name'),'3')]",
+            "createOption": "FromImage",
+            "vhd": {
+              "uri": "[concat('https', '://', variables('storageAccountName'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_name'),3,'.vhd'))]"
+            },
+            "caching": "ReadWrite"
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "[concat(parameters('virtualMachines_name'),'3')]",
+          "adminUsername": "[parameters('uniquedns')]",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "[concat('/home/', parameters('uniquedns'), '/.ssh/authorized_keys')]",
+                  "keyData": "[parameters('key')]"
+                }
+              ]
+            }
+          },
+          "secrets": [],
+          "adminPassword": "[parameters('virtualMachines_adminPassword')]"
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('netin3'))]"
+            }
+          ]
+        }
+      },
+      "resources": [],
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('netin3'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat(parameters('virtualMachines_name'),'4')]",
+      "apiVersion": "2015-06-15",
+      "location": "westeurope",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Basic_A2"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "Canonical",
+            "offer": "UbuntuServer",
+            "sku": "14.04.0-LTS",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "[concat(parameters('virtualMachines_name'),'4')]",
+            "createOption": "FromImage",
+            "vhd": {
+              "uri": "[concat('https', '://', variables('storageAccountName'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_name'),4,'.vhd'))]"
+            },
+            "caching": "ReadWrite"
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "[concat(parameters('virtualMachines_name'),'4')]",
+          "adminUsername": "[parameters('uniquedns')]",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "[concat('/home/', parameters('uniquedns'), '/.ssh/authorized_keys')]",
+                  "keyData": "[parameters('key')]"
+                }
+              ]
+            }
+          },
+          "secrets": [],
+          "adminPassword": "[parameters('virtualMachines_adminPassword')]"
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('netin4'))]"
+            }
+          ]
+        }
+      },
+      "resources": [],
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('netin4'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat(parameters('virtualMachines_name'),'5')]",
+      "apiVersion": "2015-06-15",
+      "location": "westeurope",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Basic_A2"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "Canonical",
+            "offer": "UbuntuServer",
+            "sku": "14.04.0-LTS",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "[concat(parameters('virtualMachines_name'),'5')]",
+            "createOption": "FromImage",
+            "vhd": {
+              "uri": "[concat('https', '://', variables('storageAccountName'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_name'),5,'.vhd'))]"
+            },
+            "caching": "ReadWrite"
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "[concat(parameters('virtualMachines_name'),'5')]",
+          "adminUsername": "[parameters('uniquedns')]",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "[concat('/home/', parameters('uniquedns'), '/.ssh/authorized_keys')]",
+                  "keyData": "[parameters('key')]"
+                }
+              ]
+            }
+          },
+          "secrets": [],
+          "adminPassword": "[parameters('virtualMachines_adminPassword')]"
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('netin5'))]"
+            }
+          ]
+        }
+      },
+      "resources": [],
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('netin5'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat(parameters('virtualMachines_name'),'6')]",
+      "apiVersion": "2015-06-15",
+      "location": "westeurope",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Basic_A2"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "Canonical",
+            "offer": "UbuntuServer",
+            "sku": "14.04.0-LTS",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "[concat(parameters('virtualMachines_name'),'6')]",
+            "createOption": "FromImage",
+            "vhd": {
+              "uri": "[concat('https', '://', variables('storageAccountName'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_name'),6,'.vhd'))]"
+            },
+            "caching": "ReadWrite"
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "[concat(parameters('virtualMachines_name'),'6')]",
+          "adminUsername": "[parameters('uniquedns')]",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "[concat('/home/', parameters('uniquedns'), '/.ssh/authorized_keys')]",
+                  "keyData": "[parameters('key')]"
+                }
+              ]
+            }
+          },
+          "secrets": [],
+          "adminPassword": "[parameters('virtualMachines_adminPassword')]"
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('netin6'))]"
+            }
+          ]
+        }
+      },
+      "resources": [],
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('netin6'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat(parameters('virtualMachines_name'),'7')]",
+      "apiVersion": "2015-06-15",
+      "location": "westeurope",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Basic_A2"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "Canonical",
+            "offer": "UbuntuServer",
+            "sku": "14.04.0-LTS",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "[concat(parameters('virtualMachines_name'),'7')]",
+            "createOption": "FromImage",
+            "vhd": {
+              "uri": "[concat('https', '://', variables('storageAccountName'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_name'),7,'.vhd'))]"
+            },
+            "caching": "ReadWrite"
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "[concat(parameters('virtualMachines_name'),'7')]",
+          "adminUsername": "[parameters('uniquedns')]",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "[concat('/home/', parameters('uniquedns'), '/.ssh/authorized_keys')]",
+                  "keyData": "[parameters('key')]"
+                }
+              ]
+            }
+          },
+          "secrets": [],
+          "adminPassword": "[parameters('virtualMachines_adminPassword')]"
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('netin7'))]"
+            }
+          ]
+        }
+      },
+      "resources": [],
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('netin7'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat(parameters('virtualMachines_name'),'8')]",
+      "apiVersion": "2015-06-15",
+      "location": "westeurope",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Basic_A2"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "Canonical",
+            "offer": "UbuntuServer",
+            "sku": "14.04.0-LTS",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "[concat(parameters('virtualMachines_name'),'8')]",
+            "createOption": "FromImage",
+            "vhd": {
+              "uri": "[concat('https', '://', variables('storageAccountName'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_name'),8,'.vhd'))]"
+            },
+            "caching": "ReadWrite"
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "[concat(parameters('virtualMachines_name'),'8')]",
+          "adminUsername": "[parameters('uniquedns')]",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "[concat('/home/', parameters('uniquedns'), '/.ssh/authorized_keys')]",
+                  "keyData": "[parameters('key')]"
+                }
+              ]
+            }
+          },
+          "secrets": [],
+          "adminPassword": "[parameters('virtualMachines_adminPassword')]"
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('netin8'))]"
+            }
+          ]
+        }
+      },
+      "resources": [],
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('netin8'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat(parameters('virtualMachines_name'),'9')]",
+      "apiVersion": "2015-06-15",
+      "location": "westeurope",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Basic_A2"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "Canonical",
+            "offer": "UbuntuServer",
+            "sku": "14.04.0-LTS",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "[concat(parameters('virtualMachines_name'),'9')]",
+            "createOption": "FromImage",
+            "vhd": {
+              "uri": "[concat('https', '://', variables('storageAccountName'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_name'),9,'.vhd'))]"
+            },
+            "caching": "ReadWrite"
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "[concat(parameters('virtualMachines_name'),'9')]",
+          "adminUsername": "[parameters('uniquedns')]",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "[concat('/home/', parameters('uniquedns'), '/.ssh/authorized_keys')]",
+                  "keyData": "[parameters('key')]"
+                }
+              ]
+            }
+          },
+          "secrets": [],
+          "adminPassword": "[parameters('virtualMachines_adminPassword')]"
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('netin9'))]"
+            }
+          ]
+        }
+      },
+      "resources": [],
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('netin9'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat(parameters('virtualMachines_name'),'10')]",
+      "apiVersion": "2015-06-15",
+      "location": "westeurope",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Basic_A2"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "Canonical",
+            "offer": "UbuntuServer",
+            "sku": "14.04.0-LTS",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "[concat(parameters('virtualMachines_name'),'10')]",
+            "createOption": "FromImage",
+            "vhd": {
+              "uri": "[concat('https', '://', variables('storageAccountName'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_name'), 10,'.vhd'))]"
+            },
+            "caching": "ReadWrite"
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "[concat(parameters('virtualMachines_name'),'10')]",
+          "adminUsername": "[parameters('uniquedns')]",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "[concat('/home/', parameters('uniquedns'), '/.ssh/authorized_keys')]",
+                  "keyData": "[parameters('key')]"
+                }
+              ]
+            }
+          },
+          "secrets": [],
+          "adminPassword": "[parameters('virtualMachines_adminPassword')]"
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('netin10'))]"
+            }
+          ]
+        }
+      },
+      "resources": [],
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('netin10'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat(parameters('virtualMachines_name'),'11')]",
+      "apiVersion": "2015-06-15",
+      "location": "westeurope",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Basic_A4"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "Canonical",
+            "offer": "UbuntuServer",
+            "sku": "14.04.0-LTS",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "[concat(parameters('virtualMachines_name'),'11')]",
+            "createOption": "FromImage",
+            "vhd": {
+              "uri": "[concat('https', '://', variables('storageAccountName'), '.blob.core.windows.net', concat('/vhds/', parameters('virtualMachines_name'),11,'.vhd'))]"
+            },
+            "caching": "ReadWrite"
+          },
+          "dataDisks": []
+        },
+        "osProfile": {
+          "computerName": "[concat(parameters('virtualMachines_name'),'11')]",
+          "adminUsername": "[parameters('uniquedns')]",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": true,
+            "ssh": {
+              "publicKeys": [
+                {
+                  "path": "[concat('/home/', parameters('uniquedns'), '/.ssh/authorized_keys')]",
+                  "keyData": "[parameters('key')]"
+                }
+              ]
+            }
+          },
+          "secrets": [],
+          "adminPassword": "[parameters('virtualMachines_adminPassword')]"
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('netin11'))]"
+            }
+          ]
+        }
+      },
+      "resources": [],
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', variables('netin11'))]"
+      ]
+    },
+    
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[variables('netin1')]",
+      "apiVersion": "2016-03-30",
+      "location": "westeurope",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAddress": "10.0.0.4",
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('ip1'))]"
+              },
+              "subnet": {
+                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_testeth_vnet_name')), '/subnets/default')]"
+              }
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": []
+        },
+        "enableIPForwarding": false
+      },
+      "resources": [],
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', variables('ip1'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_testeth_vnet_name'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[variables('netin2')]",
+      "apiVersion": "2016-03-30",
+      "location": "westeurope",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAddress": "10.0.0.4",
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('ip2'))]"
+              },
+              "subnet": {
+                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_testeth_vnet_name')), '/subnets/default')]"
+              }
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": []
+        },
+        "enableIPForwarding": false
+      },
+      "resources": [],
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', variables('ip2'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_testeth_vnet_name'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[variables('netin3')]",
+      "apiVersion": "2016-03-30",
+      "location": "westeurope",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAddress": "10.0.0.4",
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('ip3'))]"
+              },
+              "subnet": {
+                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_testeth_vnet_name')), '/subnets/default')]"
+              }
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": []
+        },
+        "enableIPForwarding": false
+      },
+      "resources": [],
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', variables('ip3'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_testeth_vnet_name'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[variables('netin4')]",
+      "apiVersion": "2016-03-30",
+      "location": "westeurope",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAddress": "10.0.0.4",
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('ip4'))]"
+              },
+              "subnet": {
+                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_testeth_vnet_name')), '/subnets/default')]"
+              }
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": []
+        },
+        "enableIPForwarding": false
+      },
+      "resources": [],
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', variables('ip4'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_testeth_vnet_name'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[variables('netin5')]",
+      "apiVersion": "2016-03-30",
+      "location": "westeurope",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAddress": "10.0.0.4",
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('ip5'))]"
+              },
+              "subnet": {
+                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_testeth_vnet_name')), '/subnets/default')]"
+              }
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": []
+        },
+        "enableIPForwarding": false
+      },
+      "resources": [],
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', variables('ip5'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_testeth_vnet_name'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[variables('netin6')]",
+      "apiVersion": "2016-03-30",
+      "location": "westeurope",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAddress": "10.0.0.4",
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('ip6'))]"
+              },
+              "subnet": {
+                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_testeth_vnet_name')), '/subnets/default')]"
+              }
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": []
+        },
+        "enableIPForwarding": false
+      },
+      "resources": [],
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', variables('ip6'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_testeth_vnet_name'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[variables('netin7')]",
+      "apiVersion": "2016-03-30",
+      "location": "westeurope",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAddress": "10.0.0.4",
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('ip7'))]"
+              },
+              "subnet": {
+                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_testeth_vnet_name')), '/subnets/default')]"
+              }
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": []
+        },
+        "enableIPForwarding": false
+      },
+      "resources": [],
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', variables('ip7'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_testeth_vnet_name'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[variables('netin8')]",
+      "apiVersion": "2016-03-30",
+      "location": "westeurope",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAddress": "10.0.0.4",
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('ip8'))]"
+              },
+              "subnet": {
+                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_testeth_vnet_name')), '/subnets/default')]"
+              }
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": []
+        },
+        "enableIPForwarding": false
+      },
+      "resources": [],
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', variables('ip8'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_testeth_vnet_name'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[variables('netin9')]",
+      "apiVersion": "2016-03-30",
+      "location": "westeurope",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAddress": "10.0.0.4",
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('ip9'))]"
+              },
+              "subnet": {
+                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_testeth_vnet_name')), '/subnets/default')]"
+              }
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": []
+        },
+        "enableIPForwarding": false
+      },
+      "resources": [],
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', variables('ip9'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_testeth_vnet_name'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[variables('netin10')]",
+      "apiVersion": "2016-03-30",
+      "location": "westeurope",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAddress": "10.0.0.4",
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('ip10'))]"
+              },
+              "subnet": {
+                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_testeth_vnet_name')), '/subnets/default')]"
+              }
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": []
+        },
+        "enableIPForwarding": false
+      },
+      "resources": [],
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', variables('ip10'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_testeth_vnet_name'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[variables('netin11')]",
+      "apiVersion": "2016-03-30",
+      "location": "westeurope",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAddress": "10.0.0.4",
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('ip11'))]"
+              },
+              "subnet": {
+                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_testeth_vnet_name')), '/subnets/default')]"
+              }
+            }
+          }
+        ],
+        "dnsSettings": {
+          "dnsServers": []
+        },
+        "enableIPForwarding": false
+      },
+      "resources": [],
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', variables('ip11'))]",
+        "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_testeth_vnet_name'))]"
+      ]
+    },
+
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('ip1')]",
+      "apiVersion": "2016-03-30",
+      "location": "westeurope",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic",
+        "idleTimeoutInMinutes": 4,
+        "dnsSettings": {
+          "domainNameLabel": "[concat(parameters('uniquedns'),variables('ip1'))]"
+        }
+      },
+      "resources": [],
+      "dependsOn": []
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('ip2')]",
+      "apiVersion": "2016-03-30",
+      "location": "westeurope",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic",
+        "idleTimeoutInMinutes": 4,
+        "dnsSettings": {
+          "domainNameLabel": "[concat(parameters('uniquedns'),variables('ip2'))]"
+        }
+      },
+      "resources": [],
+      "dependsOn": []
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('ip3')]",
+      "apiVersion": "2016-03-30",
+      "location": "westeurope",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic",
+        "idleTimeoutInMinutes": 4,
+        "dnsSettings": {
+          "domainNameLabel": "[concat(parameters('uniquedns'),variables('ip3'))]"
+        }
+      },
+      "resources": [],
+      "dependsOn": []
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('ip4')]",
+      "apiVersion": "2016-03-30",
+      "location": "westeurope",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic",
+        "idleTimeoutInMinutes": 4,
+        "dnsSettings": {
+          "domainNameLabel": "[concat(parameters('uniquedns'),variables('ip4'))]"
+        }
+      },
+      "resources": [],
+      "dependsOn": []
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('ip5')]",
+      "apiVersion": "2016-03-30",
+      "location": "westeurope",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic",
+        "idleTimeoutInMinutes": 4,
+        "dnsSettings": {
+          "domainNameLabel": "[concat(parameters('uniquedns'),variables('ip5'))]"
+        }
+      },
+      "resources": [],
+      "dependsOn": []
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('ip6')]",
+      "apiVersion": "2016-03-30",
+      "location": "westeurope",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic",
+        "idleTimeoutInMinutes": 4,
+        "dnsSettings": {
+          "domainNameLabel": "[concat(parameters('uniquedns'),variables('ip6'))]"
+        }
+      },
+      "resources": [],
+      "dependsOn": []
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('ip7')]",
+      "apiVersion": "2016-03-30",
+      "location": "westeurope",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic",
+        "idleTimeoutInMinutes": 4,
+        "dnsSettings": {
+          "domainNameLabel": "[concat(parameters('uniquedns'),variables('ip7'))]"
+        }
+      },
+      "resources": [],
+      "dependsOn": []
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('ip8')]",
+      "apiVersion": "2016-03-30",
+      "location": "westeurope",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic",
+        "idleTimeoutInMinutes": 4,
+        "dnsSettings": {
+          "domainNameLabel": "[concat(parameters('uniquedns'),variables('ip8'))]"
+        }
+      },
+      "resources": [],
+      "dependsOn": []
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('ip9')]",
+      "apiVersion": "2016-03-30",
+      "location": "westeurope",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic",
+        "idleTimeoutInMinutes": 4,
+        "dnsSettings": {
+          "domainNameLabel": "[concat(parameters('uniquedns'),variables('ip9'))]"
+        }
+      },
+      "resources": [],
+      "dependsOn": []
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('ip10')]",
+      "apiVersion": "2016-03-30",
+      "location": "westeurope",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic",
+        "idleTimeoutInMinutes": 4,
+        "dnsSettings": {
+          "domainNameLabel": "[concat(parameters('uniquedns'),variables('ip10'))]"
+        }
+      },
+      "resources": [],
+      "dependsOn": []
+    },
+    {
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('ip11')]",
+      "apiVersion": "2016-03-30",
+      "location": "westeurope",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic",
+        "idleTimeoutInMinutes": 4,
+        "dnsSettings": {
+          "domainNameLabel": "[concat(parameters('uniquedns'),variables('ip11'))]"
+        }
+      },
+      "resources": [],
+      "dependsOn": []
+    },
+
+    {
+      "type": "Microsoft.Network/virtualNetworks",
+      "name": "[parameters('virtualNetworks_testeth_vnet_name')]",
+      "apiVersion": "2016-03-30",
+      "location": "westeurope",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "10.0.0.0/16"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "default",
+            "properties": {
+              "addressPrefix": "10.0.0.0/24"
+            }
+          }
+        ]
+      },
+      "resources": [],
+      "dependsOn": []
+    }
+  ]
+}

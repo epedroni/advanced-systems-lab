@@ -1,0 +1,5 @@
+# Tag definitions moved from old .csshrc file
+all servers clients
+servers epedroniforaslvms1.westeurope.cloudapp.azure.com epedroniforaslvms2.westeurope.cloudapp.azure.com epedroniforaslvms3.westeurope.cloudapp.azure.com
+clients epedroniforaslvms4.westeurope.cloudapp.azure.com epedroniforaslvms5.westeurope.cloudapp.azure.com epedroniforaslvms6.westeurope.cloudapp.azure.com
+

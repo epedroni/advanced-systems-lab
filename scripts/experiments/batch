@@ -1,0 +1,35 @@
+#!/bin/bash
+
+function success {
+    curl -s --user 'api:key-????' \
+        https://api.mailgun.net/v3/pedroni.eu/messages \
+        -F from='ASL Experiments <asl@pedroni.eu>' \
+        -F to='e.pedroni91@gmail.com' \
+        -F subject='Batch complete! :)' \
+        -F text="The experiment batch finished on $(date), better rsync those logs (y)"
+}
+
+function failure {
+    curl -s --user 'api:key-????' \
+        https://api.mailgun.net/v3/pedroni.eu/messages \
+        -F from='ASL Experiments <asl@pedroni.eu>' \
+        -F to='e.pedroni91@gmail.com' \
+        -F subject='Batch failed! :(' \
+        -F text="Something went wrong with the experiment (error code $1) on $(date), better go check it out..."
+}
+
+clients=(10)
+
+for ((c=0;c<${#clients[@]};c++)); do
+    echo "Clients: ${clients[c]}"
+    ./experiment "${clients[c]}"
+    ret=$?
+    if ((ret != 0)); then
+        echo "Something went wrong, emailing..."
+        failure "$ret"
+        exit
+    fi
+done
+
+echo "Finished, emailing..."
+success
